@@ -1,0 +1,45 @@
+// ==UserScript==
+// @name         New Userscript
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/related
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=google.com
+// @match      https://key-drop.com/pl/case-battle/list
+// @grant        none
+// ==/UserScript==
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(start, ms));
+}
+//text-sm break-words
+//ml-4
+sleep(6* 1000);
+
+function start() {
+    'use strict';
+    try{
+        const blok = document.getElementsByClassName("my-10")[0];
+        const price = blok.getElementsByClassName("rounded-tl-lg")[0].getElementsByClassName("text-sm")[0].textContent;
+        const people = blok.getElementsByClassName("ml-4")[0].textContent;
+        const button = blok.getElementsByClassName("button-green-dimmed")[0];
+        const case_name = blok.getElementsByClassName("break-words ")[0].textContent;
+        if(button == undefined)
+        {
+            console.log(".");
+        }
+        if(blok != undefined)
+        {
+            if(price == "FREE" && (people == "0 / 2" || people == "1 / 2") && case_name !="TECH")
+            {
+                button.click()
+                console.log("FREE - "+case_name+" | "+people);
+            }
+        }
+        sleep(1*100);
+    }
+    catch{
+
+    }
+}
