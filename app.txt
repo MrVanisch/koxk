@@ -1,45 +1,100 @@
-// ==UserScript==
-// @name         New Userscript
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  try to take over the world!
-// @author       You
-// @match        https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo/related
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=google.com
-// @match      https://key-drop.com/pl/case-battle/list
-// @grant        none
-// ==/UserScript==
+from threading import Thread
+import pyautogui as pt
+import pyautogui
+import time 
+import requests
+import json
+import webbrowser
+import os
 
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(start, ms));
-}
-//text-sm break-words
-//ml-4
-sleep(6* 1000);
+#globalne zmienne
+cookies = ""
+nudes = ""
 
-function start() {
-    'use strict';
-    try{
-        const blok = document.getElementsByClassName("my-10")[0];
-        const price = blok.getElementsByClassName("rounded-tl-lg")[0].getElementsByClassName("text-sm")[0].textContent;
-        const people = blok.getElementsByClassName("ml-4")[0].textContent;
-        const button = blok.getElementsByClassName("button-green-dimmed")[0];
-        const case_name = blok.getElementsByClassName("break-words ")[0].textContent;
-        if(button == undefined)
-        {
-            console.log(".");
+class Clicker:
+    def __init__(self, target_png, speed):
+        self.target_png = target_png
+        self.speed = speed
+        pt.FAILSAFE = True
+
+    def nav_to_image(self):
+        try:
+            position = pt.locateOnScreen(self.target_png, confidence=.8)
+            pt.moveTo(position[0] , position[1] , duration=self.speed)
+            pt.click()
+            return 0
+
+        except:
+            print("Nie znaleziono elementu.")
+            return 1
+
+def wiadomosc_dioscrd(idkanalu,cookies):
+    global nudes
+    while True: 
+        headers1 = {
+            'authorization': 'ODg3MzgyOTQzOTc3MzMyNzY3.GXmpoh.klqpkQlyUGLHdzF4BGyzZ17L18oVOh0pV1bntE'
         }
-        if(blok != undefined)
-        {
-            if(price == "FREE" && (people == "0 / 2" || people == "1 / 2") && case_name !="TECH")
-            {
-                button.click()
-                console.log("FREE - "+case_name+" | "+people);
+        r = requests.get(f'https://discord.com/api/v9/channels/{idkanalu}/messages',headers=headers1)
+        jsonn = json.loads(r.text)
+        for value in jsonn: 
+            id = value['id']
+            if(value['id'] < id):
+                id = value['id']
+                kod = value['content']
+            elif(id == value['id']):
+                kod = value['content']
+                break
+            else:
+                kod = value['content']
+                break
+
+        if(nudes!=kod and kod != '<@&862297210828881930>' and kod !=''):
+            print("Ostani kod:", kod)
+            url = "https://key-drop.com/pl/Api/activation_code"
+            payload = json.dumps({
+            "promoCode": kod,
+            "recaptcha": None
+            })
+            headers = {
+            'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110"',
+            'content-type': 'application/json',
+            'x-requested-with': 'XMLHttpRequest',
+            'sec-ch-ua-mobile': '?0',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+            'sec-ch-ua-platform': '"Windows"',
+            'Accept': '*/*',
+            'Sec-Fetch-Site': 'same-origin',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'host': 'key-drop.com',
+            'Cookie': cookies
             }
-        }
-        sleep(1*100);
-    }
-    catch{
+            response = requests.request("POST", url, headers=headers, data=payload)
+            print(response.text)
+            nudes = kod
 
-    }
-}
+def cookieszmiana():
+    global cookies
+    start = Clicker('start.png', speed=.8)
+    potiwerdzenie = Clicker('potiwerdzenie.png', speed=.8)
+    while True:
+        os.remove('cookies.txt')
+        webbrowser.open('https://key-drop.com/pl/')
+        time.sleep(5)
+        start.nav_to_image()
+        time.sleep(2)
+        potiwerdzenie.nav_to_image()
+        time.sleep(2)
+        pyautogui.hotkey('ctrl', 'w')
+        file = open("cookies.txt")
+        cookies = file.read()
+        file.close()
+        time.sleep(60) # zmina czasu odświeżania cookies
+
+
+if __name__ == '__main__':
+    Thread(target=cookieszmiana).start()
+    time.sleep(30)
+    Thread(target= wiadomosc_dioscrd, args=('868574854536888401',cookies)).start()
+
+
